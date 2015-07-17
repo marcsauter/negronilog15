@@ -17,17 +17,21 @@ type Middleware struct {
 
 // NewMiddleware returns a new *Middleware
 func NewMiddleware() *Middleware {
+	return NewMiddlewareWithLvl(log15.LvlDebug)
+}
+
+func NewMiddlewareWithLvl(lvl log15.Lvl) *Middleware {
 	l := log15.New()
-	h := log15.LvlFilterHandler(log15.LvlInfo, log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
+	h := log15.LvlFilterHandler(lvl, log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
 	l.SetHandler(h)
 	return &Middleware{Logger: l}
 }
 
 func (l *Middleware) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	start := time.Now()
-	l.Logger.Info("started handling request", "request", r.RequestURI, "method", r.Method, "remote", r.RemoteAddr)
+	l.Logger.Debug("started handling request", "request", r.RequestURI, "method", r.Method, "remote", r.RemoteAddr)
 	next(rw, r)
 	latency := time.Since(start)
 	res := rw.(negroni.ResponseWriter)
-	l.Logger.Info("completed handling request", "status", res.Status(), "statustext", http.StatusText(res.Status()), "took", latency)
+	l.Logger.Debug("completed handling request", "status", res.Status(), "statustext", http.StatusText(res.Status()), "took", latency)
 }
