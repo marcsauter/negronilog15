@@ -2,10 +2,10 @@ package negronilog15
 
 import (
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/codegangsta/negroni"
+	"github.com/mattn/go-colorable"
 	"gopkg.in/inconshreveable/log15.v2"
 )
 
@@ -22,7 +22,7 @@ func NewMiddleware() *Middleware {
 
 func NewMiddlewareWithLvl(lvl log15.Lvl) *Middleware {
 	l := log15.New()
-	h := log15.LvlFilterHandler(lvl, log15.StreamHandler(os.Stdout, log15.TerminalFormat()))
+	h := log15.LvlFilterHandler(lvl, log15.StreamHandler(colorable.NewColorableStdout(), log15.TerminalFormat()))
 	l.SetHandler(h)
 	return &Middleware{Logger: l}
 }
