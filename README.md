@@ -7,3 +7,4 @@
 ```go
  n := negroni.New(negronilog15.NewMiddleware())
 ```
+
